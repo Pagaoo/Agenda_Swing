@@ -19,6 +19,15 @@ class contactBusiness {
         }
     }
 
+    fun getContactCount() : String {
+        val contactList = getContactList()
+        return if (contactList.isEmpty()) {
+            "0 Contatos"
+        } else {
+            "${contactList.size} Contatos"
+        }
+    }
+
     fun saveContact(name: String, phone: String) {
         validateDatas(name, phone)
         val contact = contactEntity(name, phone)

@@ -4,6 +4,7 @@ import business.contactBusiness;
 import entity.contactEntity;
 
 import javax.swing.*;
+import javax.swing.table.DefaultTableModel;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -14,6 +15,7 @@ public class MainForm extends JFrame {
     private JButton excluirContatoButton;
     private JTable contactTable;
     private JPanel rootPanel;
+    private JLabel countContactLabel;
 
     private contactBusiness mContactBusiness;
 
@@ -52,5 +54,21 @@ public class MainForm extends JFrame {
 
     private void loadContacts() {
        java.util.List<contactEntity> contactList = mContactBusiness.getContactList();
+
+       String[] columnNames = {"Nome", "Telefone"};
+       DefaultTableModel model = new DefaultTableModel(new Object[0][0], columnNames); //cria um objeto vazio com base nos nomes das colunas
+
+       for(contactEntity c: contactList) {
+           Object[] o = new Object[2]; //Fala que a fonte de dados tem duas fontes: Nome e telefone
+
+           o[0] = c.getName();
+           o[1] = c.getPhone();
+
+           model.addRow(o);
+       }
+       contactTable.clearSelection();//Tira o clique da listagem
+       contactTable.setModel(model);
+
+       countContactLabel.setText(mContactBusiness.getContactCount());
     }
 }
