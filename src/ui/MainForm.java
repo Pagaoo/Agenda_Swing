@@ -1,15 +1,21 @@
 package ui;
 
+import business.contactBusiness;
+import entity.contactEntity;
+
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.util.List;
 
 public class MainForm extends JFrame {
     private JButton novoContatoButton;
     private JButton excluirContatoButton;
     private JTable contactTable;
     private JPanel rootPanel;
+
+    private contactBusiness mContactBusiness;
 
     public MainForm(){
         setContentPane(rootPanel);
@@ -21,7 +27,10 @@ public class MainForm extends JFrame {
 
         setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE); //Fala que quando a janela fechar, o programa para
 
+        mContactBusiness = new contactBusiness();
+
         setListeners();// Metodo para atribuir eventos
+        loadContacts();
     }
 
     private void setListeners(){
@@ -39,5 +48,9 @@ public class MainForm extends JFrame {
 
             }
         });
+    }
+
+    private void loadContacts() {
+       java.util.List<contactEntity> contactList = mContactBusiness.getContactList();
     }
 }
