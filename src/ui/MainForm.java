@@ -4,6 +4,8 @@ import business.contactBusiness;
 import entity.contactEntity;
 
 import javax.swing.*;
+import javax.swing.event.ListSelectionEvent;
+import javax.swing.event.ListSelectionListener;
 import javax.swing.table.DefaultTableModel;
 import java.awt.*;
 import java.awt.event.ActionEvent;
@@ -17,6 +19,8 @@ public class MainForm extends JFrame {
     private JLabel countContactLabel;
 
     private contactBusiness mContactBusiness;
+    private String mName = "";
+    private String mPhone = "";
 
     public MainForm(){
         setContentPane(rootPanel);
@@ -34,6 +38,26 @@ public class MainForm extends JFrame {
         loadContacts();
     }
 
+    private void loadContacts() {
+        java.util.List<contactEntity> contactList = mContactBusiness.getContactList();
+
+        String[] columnNames = {"Nome", "Telefone"};
+        DefaultTableModel model = new DefaultTableModel(new Object[0][0], columnNames); //cria um objeto vazio com base nos nomes das colunas
+
+        for(contactEntity c: contactList) {
+            Object[] o = new Object[2]; //Fala que a fonte de dados tem duas fontes: Nome e telefone
+
+            o[0] = c.getName();
+            o[1] = c.getPhone();
+
+            model.addRow(o);
+        }
+        contactTable.clearSelection();//Tira o clique da listagem
+        contactTable.setModel(model);
+
+        countContactLabel.setText(mContactBusiness.getContactCount());
+    }
+
     private void setListeners(){
         novoContatoButton.addActionListener(new ActionListener() {
             @Override
@@ -43,31 +67,31 @@ public class MainForm extends JFrame {
             }
         });
 
+        contactTable.getSelectionModel().addListSelectionListener(new ListSelectionListener() {
+            @Override
+            public void valueChanged(ListSelectionEvent e) {
+                if (e.getValueIsAdjusting()) {
+                    if (contactTable.getSelectedRow() != -1) {
+                        mName = contactTable.getValueAt(contactTable.getSelectedRow(), 0).toString();//coluna 0 = name
+                        mPhone = contactTable.getValueAt(contactTable.getSelectedRow(), 1).toString();//coluna 1 = phone
+                    }
+                }
+            }
+        });
+
         excluirContatoButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
+                try {
+                    mContactBusiness.deleteContact(mName, mPhone);
+                    loadContacts();
 
+                    mName = ""; //depois de remover precisa limpar a var
+                    mPhone = ""; //depois de remover precisa limpar a var
+                } catch (Exception ex) {
+                    JOptionPane.showMessageDialog(new JFrame(), ex.getMessage());
+                }
             }
         });
-    }
-
-    private void loadContacts() {
-       java.util.List<contactEntity> contactList = mContactBusiness.getContactList();
-
-       String[] columnNames = {"Nome", "Telefone"};
-       DefaultTableModel model = new DefaultTableModel(new Object[0][0], columnNames); //cria um objeto vazio com base nos nomes das colunas
-
-       for(contactEntity c: contactList) {
-           Object[] o = new Object[2]; //Fala que a fonte de dados tem duas fontes: Nome e telefone
-
-           o[0] = c.getName();
-           o[1] = c.getPhone();
-
-           model.addRow(o);
-       }
-       contactTable.clearSelection();//Tira o clique da listagem
-       contactTable.setModel(model);
-
-       countContactLabel.setText(mContactBusiness.getContactCount());
     }
 }
