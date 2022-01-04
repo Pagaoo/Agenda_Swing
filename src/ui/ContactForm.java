@@ -1,5 +1,7 @@
 package ui;
 
+import business.contactBusiness;
+
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
@@ -13,6 +15,8 @@ public class ContactForm extends JFrame {
     private JButton salvarButton;
     private JButton cancelarButton;
 
+    private contactBusiness mContactBusiness;
+
     public ContactForm(){
         setContentPane(rootPanel);
         setVisible(true);
@@ -23,6 +27,7 @@ public class ContactForm extends JFrame {
 
         setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE); //Fala que quando a janela fechar, o programa para
 
+        mContactBusiness = new contactBusiness();
         setListeners();
     }
 
@@ -31,6 +36,17 @@ public class ContactForm extends JFrame {
             @Override
             public void actionPerformed(ActionEvent e) {
 
+                try {
+                    String name = textName.getText();
+                    String phone = textPhone.getText();
+
+                    mContactBusiness.saveContact(name, phone);
+
+                    new MainForm(); // Mostrar o main form antes de dar o dispose da página de contato
+                    dispose(); // Fecha a página de contatos
+                } catch (Exception ex) {
+                    JOptionPane.showMessageDialog(new JFrame(), ex.getMessage());
+                }
             }
         });
 
